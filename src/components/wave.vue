@@ -9,7 +9,7 @@
 
     export default {
       name: "wave",
-      props:['recorder','dataArray'],
+      props:['recorder'],
       computed:{
       },
       mounted(){
@@ -24,23 +24,25 @@
           //实例化AudioContext对象
           let audioContext = new AudioContext();
           //数据来源
-          let source = this.recorder?this.recorder.getRecordAnalyseData():new Uint8Array(1024);
+          //let source = this.recorder?this.recorder.getRecordAnalyseData():new Uint8Array(1024);
 
           //解码并调用回调函数
-          audioContext.decodeAudioData(source.buffer,function(buffer){
-            //创建分析器
-            let analyser = audioContext.createAnalyser();
-            let audioBufferSourceNode = audioContext.createBufferSource();
-            audioBufferSourceNode.connect(analyser);
-            analyser.connect(audioContext.destination);
-            audioBufferSourceNode.buffer=buffer;
-            audioBufferSourceNode.start();
-            this.draw(source);
-          });
+          // audioContext.decodeAudioData(source.buffer,function(buffer){
+          //   //创建分析器
+          //   let analyser = audioContext.createAnalyser();
+          //   let audioBufferSourceNode = audioContext.createBufferSource();
+          //   audioBufferSourceNode.connect(analyser);
+          //   //analyser.connect(audioContext.destination);
+          //   audioBufferSourceNode.buffer=buffer;
+          //   audioBufferSourceNode.start();
+          //   this.draw(source);
+          // });
+          this.draw();
         },
-        draw:function(dataArray){
+        draw:function(){
           let drawVisual = requestAnimationFrame(this.draw);
           let canvasCtx = this.canvasCtx;
+          let dataArray = this.recorder.getRecordAnalyseData();
           //绘制图像框
           const WIDTH = 500;
           const HEIGHT =500;
@@ -48,15 +50,15 @@
           canvasCtx.fillRect(0,0,WIDTH,HEIGHT);
 
           let arrayLength = dataArray.length;
-          let pointWidth =(WIDTH/arrayLength);
-          let pointHeight;
+          let itemWidth =(WIDTH/arrayLength);
+          let itemHeight;
           let x =0;
           for(let i=0;i<arrayLength;i++) {
-            pointHeight = dataArray[i];
+            itemHeight = dataArray[i];
             //绘制波形点
-            canvasCtx.fillStyle = 'rgb(' + (pointHeight + 100) + ',50,50)';
-            canvasCtx.fillRect(x, pointHeight, 2, 2);
-            x += pointWidth + 1;
+            canvasCtx.fillStyle = 'rgb(' + (itemHeight + 100) + ',50,50)';
+            canvasCtx.fillRect(x, 500-itemHeight, itemWidth, itemHeight);
+            x += itemWidth + 1;
           }
         }
       }
